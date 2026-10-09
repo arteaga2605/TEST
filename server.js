@@ -2,37 +2,33 @@ const express = require('express');
 const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
-
-// Middleware para leer JSON
 app.use(express.json());
 
-// Inicializar el cliente de Supabase con las variables de entorno de Vercel
+// Depuración: Ver si Vercel está leyendo las variables
+console.log("URL de Supabase cargada:", process.env.SUPABASE_URL ? "SÍ" : "NO");
+console.log("Key de Supabase cargada:", process.env.SUPABASE_ANON_KEY ? "SÍ" : "NO");
+
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Ruta para guardar los datos
 app.post('/api/guardar', async (req, res) => {
+    console.log("Datos recibidos en el servidor:", req.body); // Ver qué llega del formulario
+
     const { usuario, contrasena } = req.body;
 
-    // Validación básica de los datos
-    if (!usuario || !contrasena) {
-        return res.status(400).json({ error: 'Usuario y contraseña son obligatorios' });
-    }
-
     try {
-        // Insertar el nuevo usuario en la tabla "usuarios" de Supabase
         const { data, error } = await supabase
             .from('usuarios')
             .insert([{ usuario, contrasena }])
             .select();
 
         if (error) {
-            console.error('Error al insertar en Supabase:', error.message);
+            console.error('Error detallado de Supabase:', error); // Ver el error exacto
             return res.status(400).json({ error: error.message });
         }
 
-        console.log('Usuario guardado en Supabase:', data);
+        console.log('Usuario guardado exitosamente:', data);
         res.status(201).json({ status: 'success', message: 'Datos guardados correctamente', data: data[0] });
 
     } catch (err) {
@@ -41,5 +37,4 @@ app.post('/api/guardar', async (req, res) => {
     }
 });
 
-// Exportar la app para que Vercel la maneje
 module.exports = app;
