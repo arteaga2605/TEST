@@ -2,20 +2,17 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const app = express();
-const PORT = 3000;
 
-// Middleware para leer JSON y servir archivos estáticos
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// Ruta para guardar los datos
 app.post('/api/guardar', (req, res) => {
     const nuevosDatos = req.body;
-    const archivoJson = path.join(__dirname, 'credenciales.json');
+    // ⚠️ IMPORTANTE: En Vercel solo se puede escribir en /tmp
+    const archivoJson = path.join('/tmp', 'credenciales.json'); 
 
     let datosExistentes = [];
 
-    // Leer el archivo si ya existe
     if (fs.existsSync(archivoJson)) {
         const contenido = fs.readFileSync(archivoJson, 'utf8');
         try {
@@ -25,16 +22,19 @@ app.post('/api/guardar', (req, res) => {
         }
     }
 
-    // Agregar el nuevo registro
     datosExistentes.push(nuevosDatos);
 
-    // Escribir el archivo JSON
-    fs.writeFileSync(archivoJson, JSON.stringify(datosExistentes, null, 2), 'utf8');
-
-    console.log('Nuevo registro guardado:', nuevosDatos);
-    res.json({ status: 'success', message: 'Datos guardados correctamente' });
+    try {
+        fs.writeFileSync(archivoJson, JSON.stringify(datosExistentes, null, 2), 'utf8');
+        res.json({ status: 'success', message: 'Datos guardados correctamente' });
+    } catch (error) {
+        console.error("Error escribiendo archivo:", error);
+        res.status(500).json({ status: 'error', message: 'No se pudo guardar' });
+    }
 });
 
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
-});
+// ❌ NO USES app.listen() EN VERCEL
+// app.listen(PORT, () => { ... });
+
+// ✅ EXPORTA LA APP
+module.exports = app;
