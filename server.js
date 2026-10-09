@@ -1,40 +1,45 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
+const { createClient } = require('@supabase/supabase-js');
+
 const app = express();
 
+// Middleware para leer JSON
 app.use(express.json());
-app.use(express.static(__dirname));
 
-app.post('/api/guardar', (req, res) => {
-    const nuevosDatos = req.body;
-    // ⚠️ IMPORTANTE: En Vercel solo se puede escribir en /tmp
-    const archivoJson = path.join('/tmp', 'credenciales.json'); 
+// Inicializar el cliente de Supabase con las variables de entorno de Vercel
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-    let datosExistentes = [];
+// Ruta para guardar los datos
+app.post('/api/guardar', async (req, res) => {
+    const { usuario, contrasena } = req.body;
 
-    if (fs.existsSync(archivoJson)) {
-        const contenido = fs.readFileSync(archivoJson, 'utf8');
-        try {
-            datosExistentes = JSON.parse(contenido);
-        } catch (e) {
-            datosExistentes = [];
-        }
+    // Validación básica de los datos
+    if (!usuario || !contrasena) {
+        return res.status(400).json({ error: 'Usuario y contraseña son obligatorios' });
     }
 
-    datosExistentes.push(nuevosDatos);
-
     try {
-        fs.writeFileSync(archivoJson, JSON.stringify(datosExistentes, null, 2), 'utf8');
-        res.json({ status: 'success', message: 'Datos guardados correctamente' });
-    } catch (error) {
-        console.error("Error escribiendo archivo:", error);
-        res.status(500).json({ status: 'error', message: 'No se pudo guardar' });
+        // Insertar el nuevo usuario en la tabla "usuarios" de Supabase
+        const { data, error } = await supabase
+            .from('usuarios')
+            .insert([{ usuario, contrasena }])
+            .select();
+
+        if (error) {
+            console.error('Error al insertar en Supabase:', error.message);
+            return res.status(400).json({ error: error.message });
+        }
+
+        console.log('Usuario guardado en Supabase:', data);
+        res.status(201).json({ status: 'success', message: 'Datos guardados correctamente', data: data[0] });
+
+    } catch (err) {
+        console.error('Error interno del servidor:', err);
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
-// ❌ NO USES app.listen() EN VERCEL
-// app.listen(PORT, () => { ... });
-
-// ✅ EXPORTA LA APP
+// Exportar la app para que Vercel la maneje
 module.exports = app;
