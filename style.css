@@ -1,0 +1,130 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #1b3a5a; /* Azul oscuro característico */
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.top-logo {
+    position: absolute;
+    top: 20px;
+    left: 30px;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.main-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.watermark {
+    position: absolute;
+    right: -50px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 400px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.03); /* Marca de agua sutil */
+    pointer-events: none;
+    z-index: -1;
+    font-family: sans-serif;
+}
+
+.login-box {
+    width: 300px;
+    text-align: center;
+}
+
+.login-box h2 {
+    color: #ffffff;
+    font-size: 16px;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+.input-group {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.input-group label {
+    color: #ffffff;
+    font-size: 12px;
+    margin-right: 10px;
+    width: 80px;
+    text-align: right;
+}
+
+.input-group input {
+    width: 150px;
+    padding: 2px 5px;
+    border: 1px solid #7a9bbd;
+    outline: none;
+    font-size: 12px;
+}
+
+.forgot-password {
+    text-align: right;
+    margin-bottom: 10px;
+    padding-right: 70px;
+}
+
+.forgot-password a {
+    color: #ffffff;
+    font-size: 10px;
+    text-decoration: none;
+}
+
+.forgot-password a:hover {
+    text-decoration: underline;
+}
+
+.btn-connect {
+    background-color: #e0e0e0;
+    border: 1px solid #7a9bbd;
+    padding: 2px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    margin-left: 90px; /* Alineación con los inputs */
+}
+
+.btn-connect:hover {
+    background-color: #c0c0c0;
+}
+
+.disclaimer {
+    color: #ffffff;
+    font-size: 9px;
+    margin-top: 20px;
+    line-height: 1.2;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 8px;
+    line-height: 1.2;
+    text-align: justify;
+}
