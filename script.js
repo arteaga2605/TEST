@@ -1,7 +1,6 @@
 document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Evita que la página se recargue
+    event.preventDefault();
 
-    // Obtener los valores
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
@@ -11,7 +10,6 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         fecha: new Date().toISOString()
     };
 
-    // Enviar los datos al servidor backend
     fetch('/api/guardar', {
         method: 'POST',
         headers: {
@@ -22,7 +20,6 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     .then(response => response.json())
     .then(data => {
         console.log('Datos guardados:', data);
-        // Simular redirección o mensaje de éxito
         alert('Conexión exitosa (Datos guardados en el servidor local)');
         document.getElementById('loginForm').reset();
     })
